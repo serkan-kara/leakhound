@@ -15,6 +15,6 @@ func main() {
 	results := ScanPath(path)
 
 	for _, f := range results {
-		fmt.Printf("%s:%d [%s] %s\n", f.File, f.Line, f.FindingType, MaskValue(f.Match))
+		fmt.Printf("%s:%d [%s] %s\n", f.File, f.Line, f.FindingType, MaskWithStrategy(f.Match, f.Mask))
 	}
 }
