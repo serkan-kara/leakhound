@@ -21,7 +21,7 @@ Its designed to be fast, simple and easy to integrate into security pipelines
 file_path:line_number  [TYPE]  MATCH
 
 ## Example
-config.env:5  [AWS_ACCESS_KEY_ID]  AKIA1234567890ABCDEF
+config.env:5  [AWS_ACCESS_KEY_ID]  AKIA************CDEF
 
 ## Usage
 ```bash
