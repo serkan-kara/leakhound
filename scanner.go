@@ -24,13 +24,13 @@ var detectors = []detector.Detector{
 	},
 	{
 		Type: "JWT",
-		// Basit JWT pattern: header.payload.signature (base64url)
+		// basic jwt pattern: header.payload.signature base64
 		Re:   regexp.MustCompile(`eyJ[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+\.[a-zA-Z0-9_-]+`),
 		Mask: MaskJWT,
 	},
 	{
 		Type: "PRIVATE_KEY",
-		// Private key başlangıcı (satır içi yakalayacağız)
+		// private key start
 		Re:   regexp.MustCompile(`-----BEGIN (RSA |EC |OPENSSH )?PRIVATE KEY-----`),
 		Mask: MaskRedact,
 	},
@@ -47,6 +47,11 @@ func ScanFile(path string) []finding.Finding {
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
+
+	// increase buffer size to (10mb)
+	buf := make([]byte, 1024*1024)
+	scanner.Buffer(buf, 10*1024*1024)
+
 	lineNo := 0
 
 	for scanner.Scan() {
@@ -65,6 +70,10 @@ func ScanFile(path string) []finding.Finding {
 				findings = append(findings, finding)
 			}
 		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		return findings
 	}
 
 	return findings

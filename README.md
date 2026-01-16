@@ -4,11 +4,16 @@ LeakHound is a lightweight DevSecOps CLI tool that scans files and directories f
 
 Its designed to be fast, simple and easy to integrate into security pipelines
 
+LeakHound never prints full secret values.
+
 
 ## Features
 - Scan single file or directories (recursive)
 - File and line number reporting
+- Multiple secret detectors (AWS, JWT, Private Keys)
+- Detector-specific masking strategies
 - Regex based secret detection
+- Safe output (prevents secret reexposure)
 - Ignoring common folders like .git, node_modules, vendor
 - Skips common binary file types
 - Simple CLI usage
@@ -16,12 +21,16 @@ Its designed to be fast, simple and easy to integrate into security pipelines
 
 ## Currently Supported Detectors
 - AWS Access Key ID (AKIA....)
+- JWT Keys
+- Private Keys
 
 ## Output Format
-file_path:line_number  [TYPE]  MATCH
+file_path:line_number  [TYPE]  MASKED_VALUE
 
 ## Example
-config.env:5  [AWS_ACCESS_KEY_ID]  AKIA************CDEF
+.env:5  [AWS_ACCESS_KEY_ID]  AKIA************CDEF
+tokens.txt:1  [JWT]  eyJ***************c2P0
+keys.pem:3  [PRIVATE_KEY]  REDACTED
 
 ## Usage
 ```bash
