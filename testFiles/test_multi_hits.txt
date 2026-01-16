@@ -1,0 +1,6 @@
+# Multiple potential leaks in one file
+first_key=AKIAAAAAAAAAAAAAAAA
+second_key="AKIAZZZZZZZZZZZZZZ"
+some_text=hello world
+inline stuff: user said AKIAQWERTYUIOPASDFGH in chat
+end

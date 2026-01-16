@@ -7,14 +7,14 @@ import (
 
 func main() {
 	if len(os.Args) < 2 {
-		fmt.Println("Usage: leakhound <file>")
+		fmt.Println("Usage: leakhound <file or path>")
 		return
 	}
 
-	file := os.Args[1]
-	results := ScanFile(file)
+	path := os.Args[1]
+	results := ScanPath(path)
 
-	for _, r := range results {
-		fmt.Println(r)
+	for _, f := range results {
+		fmt.Printf("%s:%d [%s] %s\n", f.File, f.Line, f.FindingType, f.Match)
 	}
 }

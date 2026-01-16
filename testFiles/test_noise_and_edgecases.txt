@@ -1,0 +1,14 @@
+# should NOT match (wrong prefix)
+AWS_ACCESS_KEY_ID=AKIB1234567890ABCDEF
+
+# should NOT match (too short)
+AWS_ACCESS_KEY_ID=AKIA1234
+
+# should match (valid format)
+leak=AKIA1B2C3D4E5F6G7H8I
+
+# spaces around
+maybe =   AKIA9999999999ZZZZZZ
+
+# mixed content
+random_text: AKIAABCDEFGHIJKLMNOPQRS  (this is 19 chars after AKIA -> should not match)

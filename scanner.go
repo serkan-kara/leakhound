@@ -2,12 +2,25 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 	"regexp"
+
+	"github.com/serkan-kara/leakhound/finding"
 )
 
-func ScanFile(path string) []string {
-	var findings []string
+var detectors = []struct {
+	Type string
+	Re   *regexp.Regexp
+}{
+	{
+		Type: "AWS_ACCESS_KEY_ID",
+		Re:   regexp.MustCompile(`AKIA[0-9A-Z]{16}`),
+	},
+}
+
+func ScanFile(path string) []finding.Finding {
+	var findings []finding.Finding
 
 	file, err := os.Open(path)
 
@@ -16,13 +29,24 @@ func ScanFile(path string) []string {
 	}
 	defer file.Close()
 
-	re := regexp.MustCompile(`AKIA[0-9A-Z]{16}`) // aws key
-
 	scanner := bufio.NewScanner(file)
+	lineNo := 0
+
 	for scanner.Scan() {
+		lineNo++
 		line := scanner.Text()
-		if re.MatchString(line) {
-			findings = append(findings, line)
+
+		for _, detector := range detectors {
+			matches := detector.Re.FindAllString(line, -1)
+			for _, match := range matches {
+				finding, err := finding.New(path, lineNo, detector.Type, match)
+
+				if err != nil {
+					fmt.Println(err)
+				}
+
+				findings = append(findings, finding)
+			}
 		}
 	}
 

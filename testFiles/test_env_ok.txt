@@ -1,0 +1,10 @@
+APP_NAME=LeakHound
+ENV=dev
+
+# AWS
+AWS_ACCESS_KEY_ID=AKIA1234567890ABCDEF
+AWS_SECRET_ACCESS_KEY=super-secret-value
+
+DB_HOST=localhost
+DB_USER=admin
+DB_PASS=admin123
