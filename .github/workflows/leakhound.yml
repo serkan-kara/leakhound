@@ -1,0 +1,25 @@
+name: LeakHound Secret Scan
+
+on:
+    push:
+        branches: ["main"]
+    pull_request:
+
+jobs:
+    scan:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Setup Go
+              uses: actions/setup-go@v5
+              with:
+                  go-version: "1.22"
+
+            - name: Build LeakHound
+              run: go build -o leakhound .
+
+            - name: Run LeakHound scan
+              run: ./leakhound .

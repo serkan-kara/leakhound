@@ -1,5 +1,7 @@
 # Go Secret Leak Detector
 
+![LeakHound Secret Scan](../../actions/workflows/leakhound.yml/badge.svg)
+
 LeakHound is a lightweight DevSecOps CLI tool that scans files and directories for leaked secrets such as API keys
 
 Its designed to be fast, simple and easy to integrate into security pipelines
