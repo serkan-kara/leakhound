@@ -9,7 +9,7 @@ import (
 	"github.com/serkan-kara/leakhound/finding"
 )
 
-func ScanPath(path string) []finding.Finding {
+func ScanPath(path string, excludes []string) []finding.Finding {
 	var all []finding.Finding
 
 	info, err := os.Stat(path)
@@ -18,11 +18,23 @@ func ScanPath(path string) []finding.Finding {
 	}
 
 	if !info.IsDir() {
+		// single file exclude control
+		if shouldExclude(path, excludes) {
+			return all
+		}
 		return ScanFile(path)
 	}
 
 	_ = filepath.WalkDir(path, func(p string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
+			return nil
+		}
+
+		// if path contains fragment skip
+		if shouldExclude(p, excludes) {
+			if d.IsDir() {
+				return filepath.SkipDir
+			}
 			return nil
 		}
 
@@ -49,6 +61,27 @@ func ScanPath(path string) []finding.Finding {
 	return all
 }
 
+// if any path inside exlude list returns true
+// for example it returns true for excludes=["testFiles"] and path=".../testFiles/a.txt"
+func shouldExclude(path string, excludes []string) bool {
+	if len(excludes) == 0 {
+		return false
+	}
+
+	p := filepath.ToSlash(path)
+	for _, exclude := range excludes {
+		exclude = strings.TrimSpace(exclude)
+		if exclude == "" {
+			continue
+		}
+		if strings.Contains(p, exclude) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func isIgnoredDir(name string) bool {
 	ignored := []string{
 		".git", "node_modules", "vendor", ".idea", ".vscode", "dist", "build",
@@ -60,6 +93,7 @@ func isIgnoredDir(name string) bool {
 	}
 	return false
 }
+
 func isLikelyBinaryByExt(path string) bool {
 	ext := strings.ToLower(filepath.Ext(path))
 	binExt := []string{

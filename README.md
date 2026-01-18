@@ -20,6 +20,7 @@ LeakHound never prints full secret values.
 - Skips common binary file types
 - Simple CLI usage
 - Minimal dependencies
+- Flexible CLI argument parsing
 
 ## Currently Supported Detectors
 - AWS Access Key ID (AKIA....)
@@ -39,6 +40,10 @@ tokens.txt:1  [JWT]  eyJ***************c2P0
 keys.pem:3  [PRIVATE_KEY]  REDACTED
 
 ## Usage
+Scan a file or directory:
+
+Note: LeakHound accepts a single scan path. Additional positional arguments will result in an error.
+
 ```bash
 go build -o leakhound .
 ./leakhound <path or file>
@@ -46,3 +51,13 @@ go build -o leakhound .
 or
 
 go run . <path or file>
+```
+
+### Excluding
+```bash
+./leakhound . --exclude <path or file>
+
+or
+
+go run . <path or file> --exclude <path or file>
+```
