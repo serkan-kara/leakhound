@@ -26,6 +26,10 @@ LeakHound never prints full secret values.
 - JWT Keys
 - Private Keys
 
+## CI / GitHub Actions
+Leakhound returns non zero exit code when findings are detected.
+This makes it suitable as a CI gate to prevent secret leaks from being merged.
+
 ## Output Format
 file_path:line_number  [TYPE]  MASKED_VALUE
 
