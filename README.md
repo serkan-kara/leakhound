@@ -138,4 +138,14 @@ Options:
   --version    Show version and build information
   --help       Show this help message
 
+## Build from source
 
+Build a local binary with embedded version metadata:
+
+```bash
+./scripts/build.sh
+```
+
+```md
+You can override the version: `VERSION=v0.1.1 ./scripts/build.sh`
+```
