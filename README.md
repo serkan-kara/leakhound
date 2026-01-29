@@ -57,7 +57,7 @@ or
 go run . <path or file>
 ```
 
-## Excluding
+Excluding
 ```bash
 ./leakhound . --exclude <path or file>
 
