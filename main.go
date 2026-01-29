@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
 )
 
 type Options struct {
@@ -47,6 +48,47 @@ func parseArgs(argv []string) (Options, error) {
 }
 
 func main() {
+
+	helpWanted := false
+	versionWanted := false
+
+	// skip the leakhound name with slice
+	for _, arg := range os.Args[1:] {
+		switch arg {
+		case "-h", "--help":
+			helpWanted = true
+		case "-v", "--version":
+			versionWanted = true
+		}
+	}
+
+	if helpWanted {
+		message := `LeakHound - DevSecOps Secret Scanner
+
+Usage:
+  leakhound <path> [options]
+
+Options:
+  --exclude    Exclude files or directories from scanning (repeatable)
+  --version    Show version and build information
+  --help       Show this help message
+`
+		fmt.Print(message)
+		os.Exit(0)
+	} else if versionWanted {
+		ops := runtime.GOOS
+		arch := runtime.GOARCH
+
+		message := `LeakHound %s
+
+Commit     : %s
+Platform   : %s-%s
+Build date : %s
+`
+		fmt.Printf(message, Version, Commit, ops, arch, BuildDate)
+		os.Exit(0)
+	}
+
 	options, err := parseArgs(os.Args)
 	if err != nil {
 		fmt.Println("Usage: leakhound <file or path> [--exclude <name> ...]")
