@@ -1,4 +1,12 @@
-# LeakHound
+<p align="center">
+  <img src="assets/leakhound-logo.png" width="220">
+</p>
+
+<h1 align="center">Leakhound</h1>
+
+<p align="center">
+  Lightweight CLI tool for detecting leaked secrets in repositories
+</p>
 
 ![LeakHound Secret Scan](../../actions/workflows/leakhound.yml/badge.svg)
 
@@ -10,8 +18,8 @@ It's designed to be fast, simple and easy to integrate into security pipelines
 
 LeakHound never prints full secret values.
 
-
 ## Features
+
 - Scan single file or directories (recursive)
 - File and line number reporting
 - Multiple secret detectors (AWS, JWT, Private Keys)
@@ -25,25 +33,30 @@ LeakHound never prints full secret values.
 - Flexible CLI argument parsing
 
 ## Currently Supported Detectors
+
 - AWS Access Key ID (AKIA....)
 - JWT Keys
 - Private Keys
 
 ## CI / GitHub Actions
+
 Leakhound returns non zero exit code when findings are detected.
 This makes it suitable as a CI gate to prevent secret leaks from being merged.
 
 ## Output Format
-file_path:line_number  [TYPE]  MASKED_VALUE
+
+file_path:line_number [TYPE] MASKED_VALUE
 
 ## Example
-.env:5  [AWS_ACCESS_KEY_ID]  AKIA************CDEF
 
-tokens.txt:1  [JWT]  eyJ***************c2P0
+.env:5 [AWS_ACCESS_KEY_ID] AKIA****\*\*\*\*****CDEF
 
-keys.pem:3  [PRIVATE_KEY]  REDACTED
+tokens.txt:1 [JWT] eyJ******\*\*\*******c2P0
+
+keys.pem:3 [PRIVATE_KEY] REDACTED
 
 ## Usage
+
 Scan a file or directory:
 
 Note: LeakHound accepts a single scan path. Additional positional arguments will result in an error.
@@ -58,6 +71,7 @@ go run . <path or file>
 ```
 
 Excluding
+
 ```bash
 ./leakhound . --exclude <path or file>
 
@@ -72,10 +86,10 @@ go run . <path or file> --exclude <path or file>
 1 Findings detected (CI should fail)
 2 Usage / invalid arguments
 
-
 ## Install (Binary)
 
 ### Linux
+
 Download the Linux binary from the GitHub Releases page, make it executable and run it from your terminal:
 
 ```bash
@@ -84,6 +98,7 @@ chmod +x leakhound-linux-amd64
 ```
 
 ### macOs
+
 Download the macOS binary from the GitHub Releases page, make it executable and run it:
 
 ```bash
@@ -92,6 +107,7 @@ chmod +x leakhound-darwin-amd64
 ```
 
 ### Windows
+
 Download the Windows executable (.exe) from the GitHub Releases page and run it from PowerShell or Command Prompt:
 
 ```bash
@@ -107,14 +123,14 @@ Run:
 ```bash
 leakhound --version
 ```
+
 ### Example Output
 
 LeakHound v0.1.0
 
-Commit     : <git-commit-hash>
-Platform   : <os-arch>
+Commit : <git-commit-hash>
+Platform : <os-arch>
 Build date : <build-date>
-
 
 ## Help Output
 
@@ -131,12 +147,12 @@ leakhound --help
 LeakHound - DevSecOps Secret Scanner
 
 Usage:
-  leakhound <path> [options]
+leakhound <path> [options]
 
 Options:
-  --exclude    Exclude files or directories from scanning (repeatable)
-  --version    Show version and build information
-  --help       Show this help message
+--exclude Exclude files or directories from scanning (repeatable)
+--version Show version and build information
+--help Show this help message
 
 ## Build from source
 
