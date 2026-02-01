@@ -165,3 +165,9 @@ Build a local binary with embedded version metadata:
 ```md
 You can override the version: `VERSION=v0.1.1 ./scripts/build.sh`
 ```
+
+If macOS blocks the binary, remove the quarantine attribute:
+
+```bash
+xattr -d com.apple.quarantine leakhound-darwin-arm64
+```
