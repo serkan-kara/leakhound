@@ -5,29 +5,37 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/serkan-kara/leakhound/finding"
 )
 
-func ScanPath(path string, excludes []string) []finding.Finding {
-	var all []finding.Finding
+func ScanPath(path string, excludes []string) (finding.ScanResult, error) {
+	start := time.Now()
+	res := finding.ScanResult{} // findings nil, filesscanned 0
+	defer func() { res.Duration = time.Since(start) }()
 
 	info, err := os.Stat(path)
 	if err != nil {
-		return all
+		return res, ErrRuntime
 	}
 
 	if !info.IsDir() {
 		// single file exclude control
 		if shouldExclude(path, excludes) {
-			return all
+			return res, nil
 		}
-		return ScanFile(path)
+
+		res.FilesScanned++
+		findings := ScanFile(path)
+		res.Findings = append(res.Findings, findings...)
+
+		return res, nil
 	}
 
-	_ = filepath.WalkDir(path, func(p string, d fs.DirEntry, walkErr error) error {
+	walkErr := filepath.WalkDir(path, func(p string, d fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
-			return nil
+			return ErrRuntime
 		}
 
 		// if path contains fragment skip
@@ -52,13 +60,18 @@ func ScanPath(path string, excludes []string) []finding.Finding {
 			return nil
 		}
 
+		res.FilesScanned++
 		findings := ScanFile(p)
-		all = append(all, findings...)
+		res.Findings = append(res.Findings, findings...)
 
 		return nil
 	})
 
-	return all
+	if walkErr != nil {
+		return res, ErrRuntime
+	}
+
+	return res, nil
 }
 
 // if any path inside exlude list returns true

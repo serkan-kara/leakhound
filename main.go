@@ -1,9 +1,11 @@
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"runtime"
+	"time"
 )
 
 type Options struct {
@@ -21,7 +23,7 @@ func parseArgs(argv []string) (Options, error) {
 		switch argument {
 		case "--exclude":
 			if i+1 >= len(argv) {
-				return options, fmt.Errorf("missing value for --exclude")
+				return options, fmt.Errorf("%w: missing value for --exclude", ErrUsage)
 			}
 			options.Excludes = append(options.Excludes, argv[i+1])
 			i += 2
@@ -29,7 +31,7 @@ func parseArgs(argv []string) (Options, error) {
 		default:
 			// consider it as a path if not flag
 			if len(argument) > 0 && argument[0] == '-' {
-				return options, fmt.Errorf("Unknown flag: %s", argument)
+				return options, fmt.Errorf("%w: Unknown flag: %s", ErrUsage, argument)
 			}
 			if options.Path == "" {
 				options.Path = argument
@@ -37,12 +39,12 @@ func parseArgs(argv []string) (Options, error) {
 				continue
 			}
 			// if second positional provided throw error
-			return options, fmt.Errorf("Unexpected argument: %s", argument)
+			return options, fmt.Errorf("%w: Unexpected argument: %s", ErrUsage, argument)
 		}
 	}
 
 	if options.Path == "" {
-		return options, fmt.Errorf("Missing path")
+		return options, fmt.Errorf("%w: Missing path", ErrUsage)
 	}
 	return options, nil
 }
@@ -90,19 +92,41 @@ Build date : %s
 	}
 
 	options, err := parseArgs(os.Args)
-	if err != nil {
+	if errors.Is(err, ErrUsage) {
 		fmt.Println("Usage: leakhound <file or path> [--exclude <name> ...]")
-		fmt.Println("Error:", err)
+		fmt.Fprintln(os.Stderr, "Error:", err)
 		os.Exit(2)
 	}
 
-	results := ScanPath(options.Path, options.Excludes)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error:", err)
+		os.Exit(3)
+	}
 
-	for _, f := range results {
+	results, scanErr := ScanPath(options.Path, options.Excludes)
+
+	if scanErr != nil {
+		fmt.Fprintln(os.Stderr, "Error:", scanErr)
+	}
+
+	for _, f := range results.Findings {
 		fmt.Printf("%s:%d [%s] %s\n", f.File, f.Line, f.FindingType, MaskWithStrategy(f.Match, f.Mask))
 	}
 
-	if len(results) > 0 {
+	fmt.Printf(
+		"\nSummary: files=%d findings=%d duration=%s\n",
+		results.FilesScanned,
+		len(results.Findings),
+		results.Duration.Truncate(time.Millisecond),
+	)
+
+	if errors.Is(scanErr, ErrRuntime) {
+		os.Exit(3)
+	}
+
+	if len(results.Findings) > 0 {
 		os.Exit(1)
 	}
+
+	os.Exit(0)
 }
