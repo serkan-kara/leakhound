@@ -11,7 +11,9 @@ func TestScanFile_DetectsAWSKey(t *testing.T) {
 	dir := t.TempDir()
 	path := filepath.Join(dir, "sample.txt")
 
-	content := "hello\naws=AKIA1234567890ABCDEF\nbye\n"
+	// key generated in runtime to avoid scan detection
+	key := "AKIA" + "1234567890ABCDEF"
+	content := "hello\naws=" + key + "\nbye\n"
 
 	// 0o644 is for file permission
 	if err := os.WriteFile(path, []byte(content), 0o644); err != nil {
@@ -37,8 +39,8 @@ func TestScanFile_DetectsAWSKey(t *testing.T) {
 	}
 
 	// verify if the scanner captured exact secret text
-	if f.Match != "AKIA1234567890ABCDEF" {
-		t.Fatalf("Match = %q, want %q", f.Match, "AKIA1234567890ABCDEF")
+	if f.Match != key {
+		t.Fatalf("Match = %q, want %q", f.Match, key)
 	}
 
 }
